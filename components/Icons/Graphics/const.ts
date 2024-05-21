@@ -1,0 +1,1 @@
+export const color = '#FBB040'; //1C1D1F
