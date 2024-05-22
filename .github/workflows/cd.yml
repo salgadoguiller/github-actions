@@ -79,7 +79,6 @@ jobs:
           suffix: ${{ github.sha }}
           tag: ${{ github.sha }}
           flags: --allow-unauthenticated
-          revision_traffic: 'LATEST=100'
 
       - name: Show URL
         run: echo ${{ steps.deploy.outputs.url }}
