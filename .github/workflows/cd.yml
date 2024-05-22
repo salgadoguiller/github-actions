@@ -58,10 +58,6 @@ jobs:
     environment: dev
 
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Approval
-        run: write-host "Approve dev deployment"
             
   deploy:
     needs: approval
