@@ -76,8 +76,8 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
-          suffix: hello
-          tag: ${{ github.sha }}
+          suffix: ${{ github.sha }}
+          tag: hello
           flags: --allow-unauthenticated
 
       - name: Show URL
