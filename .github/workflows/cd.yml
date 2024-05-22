@@ -78,7 +78,6 @@ jobs:
           region: ${{ env.REGION }}
           suffix: ${{ github.sha }}
           tag: ${{ github.sha }}
-          revision_traffic: 'LATEST=100'
           flags: --allow-unauthenticated
 
       - name: Show URL
