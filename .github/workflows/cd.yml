@@ -1,10 +1,8 @@
-name: CI/CD Pipeline
+name: CD Pipeline
 
 on:
   push:
-    branches: [dev]
-  pull_request:
-    branches: [dev]
+    branches: [dev, main]
 
 env:
   PROJECT_ID: gacs-playground
@@ -12,75 +10,15 @@ env:
   REPOSITORY: container-images
   SERVICE: github-actions
   REGION: us-central1
-  WIP: projects/130218930734/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-2
-  SA: github-actions@gacs-playground.iam.gserviceaccount.com
+  WIP: projects/130218930734/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-3
+  SA: github-actions-2@gacs-playground.iam.gserviceaccount.com
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: npm
-        cache-dependency-path: package-lock.json
-
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-node-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Lint
-      run: npm run lint
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: npm
-        cache-dependency-path: package-lock.json
-
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-node-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Test
-      run: npm run test
-
   build:
-    needs: [lint, test]
-
-    if: ${{ github.event_name == 'push' }}
-
     permissions:
       contents: read
       id-token: write
@@ -117,8 +55,6 @@ jobs:
   approval:
     needs: build
 
-    if: ${{ github.event_name == 'push' }}
-
     environment: dev
 
     runs-on: ubuntu-latest
@@ -129,8 +65,6 @@ jobs:
             
   deploy:
     needs: approval
-
-    if: ${{ github.event_name == 'push' }}
 
     permissions:
       contents: read
