@@ -58,6 +58,10 @@ jobs:
     environment: dev
 
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Approved
+        run: echo Approved
             
   deploy:
     needs: approval
