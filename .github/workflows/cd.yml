@@ -8,7 +8,7 @@ env:
   PROJECT_ID: gacs-playground
   GAR_LOCATION: us-central1
   REPOSITORY: container-images
-  SERVICE: ${{ github.ref_name == 'main' && 'github-actions-prod' || 'github-actions' }}
+  SERVICE: ${{ github.ref_name == 'main' && 'github-actions-prod' || 'github-actions-dev' }}
   REGION: us-central1
   WIP: projects/130218930734/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-3
   SA: github-actions-2@gacs-playground.iam.gserviceaccount.com
@@ -55,7 +55,9 @@ jobs:
   approval:
     needs: build
 
-    environment: dev
+    if: ${{ github.ref_name == 'main' }}
+
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
 
     runs-on: ubuntu-latest
 
