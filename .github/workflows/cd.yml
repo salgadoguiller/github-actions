@@ -72,11 +72,14 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+          project_id: ${{ env.PROJECT_ID }}
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
+          suffix: ${{ github.sha }}
+          tag: ${{ github.sha }}
+          revision_traffic: 'LATEST=100'
           flags: --allow-unauthenticated
-          project_id: ${{ env.PROJECT_ID }}
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
 
       - name: Show URL
         run: echo ${{ steps.deploy.outputs.url }}
