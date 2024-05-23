@@ -175,5 +175,5 @@ jobs:
           service: github-actions-prod
           region: ${{ env.REGION }}
           suffix: ${{ github.sha }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.head_ref }}
           flags: --allow-unauthenticated
