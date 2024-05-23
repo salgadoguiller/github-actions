@@ -15,7 +15,7 @@ const Hero = () => {
               <span className="text-primary">Guillermo Salgado</span>
             </h1>
             <p className="paragraph-color mb-12 animate-fadeInUp text-base font-medium animation-delay-[250ms] sm:text-lg md:text-xl">
-              Senior Software Engineer
+              Senior Software Engineer | 8+ years of experience | JavaScrip, TypeScript, Python | Fullstack Engineer | Problem Solver
             </p>
           </article>
           <footer className="flex animate-fadeInUp flex-col gap-8 animation-delay-[500ms]">
