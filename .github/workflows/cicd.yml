@@ -149,7 +149,7 @@ jobs:
             })
 
   deploy-prod:
-    needs: build
+    needs: deploy-dev
     environment: prod
     runs-on: ubuntu-latest
             
