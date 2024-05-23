@@ -134,7 +134,7 @@ jobs:
           service: github-actions-dev
           region: ${{ env.REGION }}
           suffix: ${{ github.sha }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.head_ref }}
           flags: --allow-unauthenticated
 
       - name: Show URL in PR comment
