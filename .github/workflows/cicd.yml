@@ -131,7 +131,7 @@ jobs:
         id: branch
         run: |
           REPO=${{ github.head_ref }}
-          BRANCH2=${REPO////_}
+          BRANCH=${REPO////_}
           echo $BRANCH
           echo branch=$BRANCH >> $GITHUB_OUTPUT
 
