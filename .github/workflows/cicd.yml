@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   lint:
-    if: github.event_name == 'push'
+    if: github.head_ref == 'main'
 
     runs-on: ubuntu-latest
 
