@@ -127,6 +127,14 @@ jobs:
           workload_identity_provider: ${{ env.WIP }}
           service_account: ${{ env.SA}}
 
+      - name: Branch
+        id: branch
+        run: |
+          REPO=${{ github.head_ref }}
+          BRANCH=${REPO////-}
+          echo $BRANCH
+          echo branch=$BRANCH >> $GITHUB_OUTPUT
+
       - name: GCP Cloud Run deploy
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
@@ -136,7 +144,7 @@ jobs:
           service: github-actions-dev
           region: ${{ env.REGION }}
           suffix: ${{ github.sha }}
-          tag: ${{ github.head_ref }}
+          tag: ${{ steps.branch.outputs.branch }}
           flags: --allow-unauthenticated
 
       - name: Show URL in PR comment
