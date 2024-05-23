@@ -131,10 +131,8 @@ jobs:
         id: branch
         run: |
           REPO=${{ github.head_ref }}
-          BRANCH=${REPO/\//_}
           BRANCH2=${REPO////_}
           echo $BRANCH
-          echo $BRANCH2
           echo branch=$BRANCH >> $GITHUB_OUTPUT
 
       - name: GCP Cloud Run deploy
