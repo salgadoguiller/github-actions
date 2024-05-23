@@ -11,7 +11,7 @@ const Hero = () => {
         <div className="flex h-full w-full flex-col items-center justify-between text-center">
           <article>
             <h1 className="mb-5 animate-fadeInUp text-3xl font-bold sm:text-4xl md:text-5xl">
-              {'Hi there from cicd branch! I\'m '}
+              {'Hi there from test-ga branch! I\'m '}
               <span className="text-primary">Guillermo Salgado</span>
             </h1>
             <p className="paragraph-color mb-12 animate-fadeInUp text-base font-medium animation-delay-[250ms] sm:text-lg md:text-xl">
