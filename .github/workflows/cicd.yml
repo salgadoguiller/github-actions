@@ -102,16 +102,6 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
           registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
 
-      - name: Repository
-        id: repository
-        run: |
-          REPOSITORY=${{ github.repository }}
-          REPOSITORY=${REPOSITORY////-}
-          REPOSITORY=${REPOSITORY//./-}
-          REPOSITORY=${REPOSITORY//_/-}
-          echo $REPOSITORY
-          echo repository=$REPOSITORY >> $GITHUB_OUTPUT
-
       - name: Branch
         id: branch
         run: |
@@ -123,10 +113,10 @@ jobs:
           echo branch=$BRANCH >> $GITHUB_OUTPUT
 
       - name: Build container
-        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/hola:${{ github.event.pull_request.head.sha }} ./
+        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}/${{ github.head_ref }}:${{ github.event.pull_request.head.sha }} ./
 
       - name: Push container
-        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/hola:${{ github.event.pull_request.head.sha }}
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}/${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
 
   deploy-dev:
     needs: build
@@ -170,9 +160,9 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/hola:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}/${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
-          service: ${{ steps.repository.outputs.repository }}-dev
+          service: github-actions-dev
           region: ${{ env.REGION }}
           suffix: ${{ github.event.pull_request.head.sha }}
           tag: ${{ steps.branch.outputs.branch }}
@@ -231,9 +221,9 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/hola:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}/${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
-          service: ${{ steps.repository.outputs.repository }}-prod
+          service: github-actions-prod
           region: ${{ env.REGION }}
           suffix: ${{ github.event.pull_request.head.sha }}
           flags: --allow-unauthenticated
