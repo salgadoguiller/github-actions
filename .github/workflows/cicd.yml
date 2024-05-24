@@ -8,7 +8,6 @@ env:
   PROJECT_ID: gacs-playground
   GAR_LOCATION: us-central1
   REPOSITORY: container-images
-  IMAGE: github-actions
   REGION: us-central1
   WIP: projects/130218930734/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-3
   SA: github-actions-2@gacs-playground.iam.gserviceaccount.com
@@ -103,11 +102,21 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
           registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
 
+      - name: Branch
+        id: branch
+        run: |
+          REPO=${{ github.head_ref }}
+          BRANCH=${REPO////-}
+          BRANCH=${BRANCH//./-}
+          BRANCH=${BRANCH//_/-}
+          echo $BRANCH
+          echo branch=$BRANCH >> $GITHUB_OUTPUT
+
       - name: Build container
-        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.event.pull_request.head.sha }} ./
+        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }} ./
 
       - name: Push container
-        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.event.pull_request.head.sha }}
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
 
   deploy-dev:
     needs: build
@@ -141,7 +150,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: github-actions-dev
           region: ${{ env.REGION }}
@@ -178,11 +187,21 @@ jobs:
           workload_identity_provider: ${{ env.WIP }}
           service_account: ${{ env.SA}}
 
+      - name: Branch
+        id: branch
+        run: |
+          REPO=${{ github.head_ref }}
+          BRANCH=${REPO////-}
+          BRANCH=${BRANCH//./-}
+          BRANCH=${BRANCH//_/-}
+          echo $BRANCH
+          echo branch=$BRANCH >> $GITHUB_OUTPUT
+
       - name: GCP Cloud Run deploy
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: github-actions-prod
           region: ${{ env.REGION }}
