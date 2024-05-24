@@ -102,6 +102,16 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
           registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
 
+      - name: Repository
+        id: repository
+        run: |
+          REPOSITORY=${{ github.repository }}
+          REPOSITORY=${REPOSITORY////-}
+          REPOSITORY=${REPOSITORY//./-}
+          REPOSITORY=${REPOSITORY//_/-}
+          echo $REPOSITORY
+          echo repository=$REPOSITORY >> $GITHUB_OUTPUT
+
       - name: Branch
         id: branch
         run: |
@@ -113,10 +123,10 @@ jobs:
           echo branch=$BRANCH >> $GITHUB_OUTPUT
 
       - name: Build container
-        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }} ./
+        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.repository.outputs.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }} ./
 
       - name: Push container
-        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.repository.outputs.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
 
   deploy-dev:
     needs: build
@@ -136,16 +146,6 @@ jobs:
           workload_identity_provider: ${{ env.WIP }}
           service_account: ${{ env.SA}}
 
-      - name: Branch
-        id: branch
-        run: |
-          BRANCH=${{ github.head_ref }}
-          BRANCH=${BRANCH////-}
-          BRANCH=${BRANCH//./-}
-          BRANCH=${BRANCH//_/-}
-          echo $BRANCH
-          echo branch=$BRANCH >> $GITHUB_OUTPUT
-
       - name: Repository
         id: repository
         run: |
@@ -156,11 +156,21 @@ jobs:
           echo $REPOSITORY
           echo repository=$REPOSITORY >> $GITHUB_OUTPUT
 
+      - name: Branch
+        id: branch
+        run: |
+          BRANCH=${{ github.head_ref }}
+          BRANCH=${BRANCH////-}
+          BRANCH=${BRANCH//./-}
+          BRANCH=${BRANCH//_/-}
+          echo $BRANCH
+          echo branch=$BRANCH >> $GITHUB_OUTPUT
+
       - name: GCP Cloud Run deploy
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.repository.outputs.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: ${{ steps.repository.outputs.repository }}-dev
           region: ${{ env.REGION }}
@@ -197,16 +207,6 @@ jobs:
           workload_identity_provider: ${{ env.WIP }}
           service_account: ${{ env.SA}}
 
-      - name: Branch
-        id: branch
-        run: |
-          REPO=${{ github.head_ref }}
-          BRANCH=${REPO////-}
-          BRANCH=${BRANCH//./-}
-          BRANCH=${BRANCH//_/-}
-          echo $BRANCH
-          echo branch=$BRANCH >> $GITHUB_OUTPUT
-
       - name: Repository
         id: repository
         run: |
@@ -217,11 +217,21 @@ jobs:
           echo $REPOSITORY
           echo repository=$REPOSITORY >> $GITHUB_OUTPUT
 
+      - name: Branch
+        id: branch
+        run: |
+          REPO=${{ github.head_ref }}
+          BRANCH=${REPO////-}
+          BRANCH=${BRANCH//./-}
+          BRANCH=${BRANCH//_/-}
+          echo $BRANCH
+          echo branch=$BRANCH >> $GITHUB_OUTPUT
+
       - name: GCP Cloud Run deploy
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ steps.repository.outputs.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: ${{ steps.repository.outputs.repository }}-prod
           region: ${{ env.REGION }}
