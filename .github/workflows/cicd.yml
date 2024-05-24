@@ -113,10 +113,10 @@ jobs:
           echo branch=$BRANCH >> $GITHUB_OUTPUT
 
       - name: Build container
-        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }} ./
+        run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }} ./
 
       - name: Push container
-        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
 
   deploy-dev:
     needs: build
@@ -150,7 +150,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: ${{ github.repository }}-dev
           region: ${{ env.REGION }}
@@ -201,7 +201,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ steps.branch.outputs.branch }}:${{ github.event.pull_request.head.sha }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ github.repository }}-${{ github.head_ref }}:${{ github.event.pull_request.head.sha }}
           project_id: ${{ env.PROJECT_ID }}
           service: ${{ github.repository }}-prod
           region: ${{ env.REGION }}
